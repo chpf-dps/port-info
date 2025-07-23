@@ -1,0 +1,32 @@
+name: Generate index.md with file links
+
+on:
+  push:
+    paths:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Generate index.md
+        run: |
+          echo "# 📄 Dateiindex für chpf-dps/port-info" > index.md
+          echo "" >> index.md
+          find . -type f \( -name "*.docx" -o -name "*.pdf" -o -name "*.xlsx" -o -name "*.md" \) | sort | while read filepath; do
+            url="https://raw.githubusercontent.com/${{ github.repository }}/main/${filepath#./}"
+            echo "- [${filepath#./}]($url)" >> index.md
+          done
+
+      - name: Commit and push index.md
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add index.md
+          git commit -m "Automatisch generierter Dateiindex" || echo "Keine Änderungen"
+          git push
