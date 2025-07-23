@@ -18,9 +18,15 @@ jobs:
         run: |
           echo "# 📄 Dateiindex für chpf-dps/port-info" > index.md
           echo "" >> index.md
-          find . -type f \( -name "*.docx" -o -name "*.pdf" -o -name "*.xlsx" -o -name "*.md" \) | sort | while read filepath; do
-            url="https://raw.githubusercontent.com/${{ github.repository }}/main/${filepath#./}"
-            echo "- [${filepath#./}]($url)" >> index.md
+          find . -type f \( \
+            -iname "*.doc" -o -iname "*.docx" -o -iname "*.rtf" -o -iname "*.txt" -o -iname "*.md" -o \
+            -iname "*.xls" -o -iname "*.xlsx" -o -iname "*.ods" -o -iname "*.csv" -o \
+            -iname "*.pdf" -o \
+            -iname "*.xml" -o -iname "*.json" -o -iname "*.yaml" -o -iname "*.yml" \
+          \) | sort | while read filepath; do
+            cleanpath="${filepath#./}"
+            url="https://raw.githubusercontent.com/${{ github.repository }}/main/$cleanpath"
+            echo "- [$cleanpath]($url)" >> index.md
           done
 
       - name: Commit and push index.md
