@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # WICHTIG: Push-Berechtigung aktivieren
 
     steps:
       - name: Checkout repository
@@ -29,7 +31,7 @@ jobs:
             echo "- [$cleanpath]($url)" >> index.md
           done
 
-      - name: Commit and push if index.md changed
+      - name: Commit and push index.md
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
@@ -40,3 +42,5 @@ jobs:
             git commit -m "🔄 Automatisch generierter Dateiindex"
             git push
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
